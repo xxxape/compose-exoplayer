@@ -29,6 +29,7 @@ fun SimpleMediaPlayer(
     playerState: MediaPlayerState,
     url: String,
     modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Fit,
     showControls: Boolean = true,
     cover: @Composable () -> Unit = {},
 ) {
@@ -38,7 +39,7 @@ fun SimpleMediaPlayer(
         playerState = playerState,
         url = url,
         modifier = modifier,
-        contentScale = ContentScale.Fit,
+        contentScale = contentScale,
         cover = cover,
         showControls = showControls,
         controlsVisible = controlsVisible,

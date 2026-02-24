@@ -3,7 +3,6 @@ package com.xxxape.exoplayer.player
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
@@ -14,21 +13,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.media3.common.util.UnstableApi
 import com.xxxape.exoplayer.cache.VideoDataSourceHolder
 import com.xxxape.exoplayer.util.getActivity
-import androidx.core.net.toUri
 
 @Stable
 class MediaPlayerState(
@@ -104,16 +103,6 @@ class MediaPlayerState(
                 ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
         }
-    }
-
-    /** 由 Activity onConfigurationChanged 等调用，仅同步全屏状态（不切换屏幕方向）。 */
-    fun enterFullscreen() {
-        isFullscreen = true
-    }
-
-    /** 由 Activity onConfigurationChanged 等调用，仅同步全屏状态（不切换屏幕方向）。 */
-    fun exitFullscreen() {
-        isFullscreen = false
     }
 
     fun release() {

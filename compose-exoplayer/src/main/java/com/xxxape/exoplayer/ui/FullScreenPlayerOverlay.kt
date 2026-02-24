@@ -19,10 +19,6 @@ import com.xxxape.exoplayer.player.MediaPlayerState
  *
  * 使用方式：在 Activity setContent 的根布局（如 Box）内、列表之上调用本 Composable，
  * 例如 `Box { LazyColumn { ... }; FullScreenPlayerOverlay(...) }`。
- * Activity 需在 AndroidManifest 中配置 `android:configChanges="orientation|screenSize"`，
- * 并在 [onConfigurationChanged][android.app.Activity.onConfigurationChanged] 中根据
- * [Configuration.ORIENTATION_LANDSCAPE]/[Configuration.ORIENTATION_PORTRAIT] 调用
- * [MediaPlayerState.enterFullscreen]/[MediaPlayerState.exitFullscreen] 以同步全屏状态。
  */
 @OptIn(UnstableApi::class)
 @Composable

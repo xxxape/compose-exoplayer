@@ -1,6 +1,5 @@
 package com.xxxape.exoplayer.demo
 
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,14 +39,6 @@ class MainActivity : ComponentActivity() {
                     PlayerScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
-        }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        // 仅当从全屏切回竖屏时同步状态（由点击「退出全屏」触发），不响应用户旋转手机
-        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            playerStates.forEach { it.exitFullscreen() }
         }
     }
 

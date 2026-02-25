@@ -14,7 +14,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.media3.common.util.UnstableApi
 import com.xxxape.exoplayer.player.MediaPlayerState
 import com.xxxape.exoplayer.widget.PlayerControlBar
-import com.xxxape.exoplayer.widget.PlayerTopBar
 import com.xxxape.exoplayer.widget.VideoSurface
 
 /**
@@ -30,7 +29,7 @@ fun SimpleMediaPlayer(
     url: String,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
-    showControls: Boolean = true,
+    showControls: Boolean = false,
     cover: @Composable () -> Unit = {},
 ) {
     var controlsVisible by remember { mutableStateOf(false) }
@@ -46,12 +45,6 @@ fun SimpleMediaPlayer(
         onTap = { controlsVisible = !controlsVisible },
         controls = { state, progressState ->
             Box(modifier = Modifier.fillMaxSize()) {
-                if (state.isFullscreen) {
-                    PlayerTopBar(
-                        modifier = Modifier.align(Alignment.TopCenter),
-                        playerState = state
-                    )
-                }
                 PlayerControlBar(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     player = state.getPlayer(),

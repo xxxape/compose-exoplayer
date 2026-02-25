@@ -3,7 +3,6 @@ package com.xxxape.exoplayer.player
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
-import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -56,6 +55,7 @@ class MediaPlayerState(
             wasPlayingBeforePause = exoPlayer.isPlaying
             exoPlayer.pause()
         }
+
         override fun onResume(owner: LifecycleOwner) {
             if (wasPlayingBeforePause) exoPlayer.play()
         }
@@ -77,8 +77,12 @@ class MediaPlayerState(
         val mediaItem = MediaItem.fromUri(uri)
         val dataSourceFactory = VideoDataSourceHolder.getCacheFactory(context)
         val mediaSource = when (Util.inferContentType(uri)) {
-            C.CONTENT_TYPE_DASH -> DashMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
-            C.CONTENT_TYPE_HLS -> HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
+            C.CONTENT_TYPE_DASH -> DashMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(mediaItem)
+
+            C.CONTENT_TYPE_HLS -> HlsMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(mediaItem)
+
             else -> ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
         }
         exoPlayer.setMediaSource(mediaSource)
@@ -113,18 +117,6 @@ class MediaPlayerState(
             listener = null
         }
         exoPlayer.release()
-    }
-}
-
-/**
- * 拦截系统返回/手势返回：全屏时退出全屏并消费事件，非全屏时不消费，交给下层或系统。
- * 应在根或与 [FullScreenPlayerOverlay] 同级处调用，多个播放器时可为每个 [MediaPlayerState] 各调用一次。
- */
-@Composable
-fun MediaPlayerBackHandler(playerState: MediaPlayerState) {
-    val isFullscreen = playerState.isFullscreen
-    BackHandler(enabled = isFullscreen) {
-        playerState.toggleFullscreen()
     }
 }
 

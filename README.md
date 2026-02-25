@@ -48,30 +48,20 @@ SimpleMediaPlayer(
 - `url`：视频地址，支持 http(s)、file 等；同一次 `url` 不会重复 load。
 - `cover`：未开始播放或暂停在 0 秒时显示的封面内容。
 
-### 3. 全屏覆盖层
-
-当用户点击控制条「全屏」后，`playerState.isFullscreen == true`。在**根布局**（如 `Box`）内、列表之上放置 `FullScreenPlayerOverlay`，即可在顶层绘制全屏播放器并隐藏状态栏/导航栏：
+### 3. 可切换全屏的播放器
 
 ```kotlin
 Box(modifier = Modifier.fillMaxSize()) {
-    LazyColumn { /* 列表中的 SimpleMediaPlayer */ }
-
-    FullScreenPlayerOverlay(
+    RotatableMediaPlayer(
         playerState = playerState,
         url = url,
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(16f / 9f),
         cover = { /* 与内嵌时一致的封面 */ },
     )
 }
 ```
 
-退出全屏时由 Overlay 内部通过 `SimpleMediaPlayer` 的顶部返回键或系统返回键调用 `playerState.toggleFullscreen()`，并恢复系统栏。
+退出全屏时由内部调用 `playerState.toggleFullscreen()`。
 
-### 4. 拦截返回键（全屏时先退出全屏）
-
-在根或与 `FullScreenPlayerOverlay` 同级处添加 `MediaPlayerBackHandler`，使全屏时按返回键先退出全屏而不直接关页：
-
-```kotlin
-MediaPlayerBackHandler(playerState)
-```
-
-若有多个播放器，可为每个 `MediaPlayerState` 各调用一次（按需）。

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,7 +51,7 @@ internal fun VideoSurface(
     showControls: Boolean = false,
     controlsVisible: Boolean = false,
     onTap: () -> Unit = {},
-    controls: @Composable (MediaPlayerState, ProgressStateWithTickInterval) -> Unit = { _, _ -> },
+    controls: @Composable BoxScope.(MediaPlayerState, ProgressStateWithTickInterval) -> Unit = { _, _ -> },
 ) {
     LaunchedEffect(url) {
         playerState.loadMediaItem(url)
@@ -129,9 +130,7 @@ internal fun VideoSurface(
         }
 
         if (showControls && controlsVisible) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                controls(playerState, progressState)
-            }
+            controls(playerState, progressState)
         }
     }
 }

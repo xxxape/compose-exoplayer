@@ -1,8 +1,6 @@
 package com.xxxape.exoplayer.ui
 
 import androidx.annotation.OptIn
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,15 +42,13 @@ fun SimpleMediaPlayer(
         controlsVisible = controlsVisible,
         onTap = { controlsVisible = !controlsVisible },
         controls = { state, progressState ->
-            Box(modifier = Modifier.fillMaxSize()) {
-                PlayerControlBar(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    player = state.getPlayer(),
-                    progressState = progressState,
-                    isFullscreen = state.isFullscreen,
-                    onFullscreenClick = { state.toggleFullscreen() },
-                )
-            }
+            PlayerControlBar(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                player = state.getPlayer(),
+                progressState = progressState,
+                isFullscreen = state.isFullscreen,
+                onFullscreenClick = { state.toggleFullscreen() },
+            )
         },
     )
 }

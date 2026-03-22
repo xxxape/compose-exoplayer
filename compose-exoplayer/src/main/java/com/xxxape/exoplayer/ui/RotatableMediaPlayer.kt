@@ -1,8 +1,10 @@
 package com.xxxape.exoplayer.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -30,8 +32,10 @@ fun RotatableMediaPlayer(
             SimpleMediaPlayer(
                 playerState = playerState,
                 url = url,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black),
+                contentScale = ContentScale.Fit,
                 showControls = true,
                 cover = cover,
             )

@@ -5,9 +5,9 @@ plugins {
     id("signing")
 }
 
-val publishGroupId = project.findProperty("PUBLISH_GROUP_ID") as String? ?: "io.github.xxxape"
-val publishArtifactId = project.findProperty("PUBLISH_ARTIFACT_ID") as String? ?: "compose-exoplayer"
-val publishVersion = project.findProperty("PUBLISH_VERSION") as String? ?: "1.0.4"
+val publishGroupId = project.findProperty("PUBLISH_GROUP_ID") as String
+val publishArtifactId = project.findProperty("PUBLISH_ARTIFACT_ID") as String
+val publishVersion = project.findProperty("PUBLISH_VERSION") as String
 
 android {
     namespace = "com.xxxape.exoplayer"

@@ -3,6 +3,7 @@ package com.xxxape.exoplayer.player
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.media.session.PlaybackState
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
@@ -25,17 +27,18 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.ui.compose.state.ProgressStateWithTickInterval
 import com.xxxape.exoplayer.cache.VideoDataSourceHolder
 import com.xxxape.exoplayer.util.getActivity
+import kotlinx.coroutines.CoroutineScope
 
 @Stable
 class MediaPlayerState(
     val context: Context,
+    val scope: CoroutineScope,
     repeatMode: Int = Player.REPEAT_MODE_ONE,
     playWhenReady: Boolean = true,
 ) {
-    var isFullscreen by mutableStateOf(false)
-        private set
 
     private val exoPlayer = ExoPlayer.Builder(context)
         .build()
@@ -43,9 +46,22 @@ class MediaPlayerState(
             this.repeatMode = repeatMode
             this.playWhenReady = playWhenReady
         }
+    var isFullscreen by mutableStateOf(false)
+        private set
+
+    @SuppressLint("UnsafeOptInUsageError")
+    val progressState = ProgressStateWithTickInterval(
+        player = exoPlayer,
+        tickIntervalMs = 500L,
+        scope = scope
+    )
+    
+    var isPlaying by mutableStateOf(false)
+    var isLoading by mutableStateOf(false)
 
     private var currentUrl: String? = null
     private var listener: Player.Listener? = null
+    private var isEnd: Boolean = false
 
     /** 退后台前是否在播放，用于 onResume 时仅在此为 true 时恢复播放 */
     private var wasPlayingBeforePause: Boolean = false
@@ -87,6 +103,48 @@ class MediaPlayerState(
         }
         exoPlayer.setMediaSource(mediaSource)
         exoPlayer.prepare()
+        exoPlayer.addListener(
+            object : Player.Listener {
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    super.onIsPlayingChanged(isPlaying)
+                    this@MediaPlayerState.isPlaying = isPlaying
+                }
+
+                override fun onIsLoadingChanged(isLoading: Boolean) {
+                    super.onIsLoadingChanged(isLoading)
+                    this@MediaPlayerState.isLoading = isLoading
+                }
+
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    super.onPlaybackStateChanged(playbackState)
+                    isEnd = playbackState == Player.STATE_ENDED
+                }
+            }
+        )
+    }
+
+    fun togglePlayPause() {
+        if (isEnd) {
+            seekTo(0)
+            return
+        }
+        if (exoPlayer.isPlaying) pause() else play()
+    }
+
+    fun seekTo(positionMs: Long) {
+        exoPlayer.seekTo(positionMs)
+    }
+
+    fun setSpeed(speed: Float) {
+        exoPlayer.setPlaybackSpeed(speed)
+    }
+
+    fun play() {
+        exoPlayer.play()
+    }
+
+    fun pause() {
+        exoPlayer.pause()
     }
 
     fun setPlayerListener(playerListener: Player.Listener) {
@@ -120,13 +178,22 @@ class MediaPlayerState(
     }
 }
 
+@OptIn(UnstableApi::class)
 @Composable
 fun rememberMediaPlayerState(
     repeatMode: Int = Player.REPEAT_MODE_ONE,
     playWhenReady: Boolean = true,
 ): MediaPlayerState {
     val context = LocalContext.current
-    val playerState = remember { MediaPlayerState(context, repeatMode, playWhenReady) }
+    val scope = rememberCoroutineScope()
+    val playerState = remember {
+        MediaPlayerState(
+            context = context,
+            scope = scope,
+            repeatMode = repeatMode,
+            playWhenReady = playWhenReady
+        )
+    }
     DisposableEffect(Unit) {
         onDispose { playerState.release() }
     }

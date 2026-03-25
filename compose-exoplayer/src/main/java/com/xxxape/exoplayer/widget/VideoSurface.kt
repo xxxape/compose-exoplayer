@@ -29,8 +29,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.compose.ContentFrame
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
 import androidx.media3.ui.compose.SurfaceType
-import androidx.media3.ui.compose.state.ProgressStateWithTickInterval
-import androidx.media3.ui.compose.state.rememberProgressStateWithTickInterval
 import com.xxxape.exoplayer.player.MediaPlayerState
 
 /**
@@ -51,7 +49,7 @@ internal fun VideoSurface(
     showControls: Boolean = false,
     controlsVisible: Boolean = false,
     onTap: () -> Unit = {},
-    controls: @Composable BoxScope.(MediaPlayerState, ProgressStateWithTickInterval) -> Unit = { _, _ -> },
+    controls: @Composable BoxScope.(MediaPlayerState) -> Unit,
 ) {
     LaunchedEffect(url) {
         playerState.loadMediaItem(url)
@@ -59,16 +57,11 @@ internal fun VideoSurface(
 
     val player = playerState.getPlayer()
     val scope = rememberCoroutineScope()
-    val progressState = rememberProgressStateWithTickInterval(
-        player = player,
-        tickIntervalMs = 500L,
-        scope = scope,
-    )
-    LaunchedEffect(player) { progressState.observe() }
+    LaunchedEffect(player) { playerState.progressState.observe() }
 
     val shouldShowCover by remember {
         derivedStateOf {
-            !player.playWhenReady && progressState.currentPositionMs == 0L
+            !player.playWhenReady && playerState.progressState.currentPositionMs == 0L
         }
     }
 
@@ -130,7 +123,7 @@ internal fun VideoSurface(
         }
 
         if (showControls && controlsVisible) {
-            controls(playerState, progressState)
+            controls(playerState)
         }
     }
 }
